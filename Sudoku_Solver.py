@@ -1,61 +1,81 @@
 # criar uma matriz do tamanho da primeira casa
-import random
-import time
-
-quadrante = [
-    [0,0,0],
-    [0,0,0],
-    [0,0,0]
+sudokuBoard = [
+    [0, 0, 0, 0, 0, 0, 5, 0, 9],
+    [8, 0, 0, 0, 7, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 9, 3, 5, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 4, 0, 6, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 7, 0],
+    [6, 7, 0, 0, 0, 0, 0, 8, 0],
+    [0, 0, 0, 2, 0, 3, 0, 0, 0],
+    [4, 0, 0, 9, 0, 0, 0, 0, 0],
 ]
 
-linha = [quadrante.copy() for _ in range(0,3)]
+# função que resolve
+def Resolve(board):
+    find = find_empty(board)
+    if not find:
+        return True
+    else:
+        row , column = find
 
-# vai verificar se já existe no quadrante
-# se for true vai verificar se existe na linha ?????
-def verificaSeJáExisteNoQuadrante(CasaAtual , _q): 
-    temp = []
+    for i  in range(1,10):
+        if valid(board , i , (row , column)):
+            board[row][column] = i
+
+            if Resolve(board):
+                return True
+            board[row][column] = 0
+    return False
+
     
-    for i in _q:
-        for a in i:
-            temp.append(a)
-            print(temp)
-    if temp.count(CasaAtual) > 1 :
-        return False
 
+def find_empty(bo):
+    for i in range(len(bo)):
+        for j in range(len(bo[i])):
+            if bo[i][j] == 0:
+                return (i , j) #return row and column
+    return None
 
-inicio = time.time()
-
-
-print("-="*32)
-
-for col in range(0,linha.__len__()):
-    for linhaquadrante in range(0 , linha[col].__len__()):
-        for casa in range(0 , linha[col][linhaquadrante].__len__()):
+def valid(bo , num , posi):
+    # verica linha
+    for i in range(len(bo[0])):
+        if bo[posi[0]][i] == num and posi[1] != i:
+            return False
+        
+    #verifica coluna
+    for j in range(len(bo[0])):
+        if bo[j][posi[1]] == num and posi[0] != j:
+            return False
+        
+    # verifica quadrante
+    quad_x = posi[1] // 3 
+    quad_y = posi[0] // 3 
+    for i in range(quad_y * 3 , quad_y * 3 + 3):
+        for j in range(quad_x *3 , quad_x*3 + 3):
+            if bo[i][j] == num and (i,j) != posi:
+                return False
             
-            _quadrante = linha[col]
-            linha[col][linhaquadrante][casa] = random.randint(1,9)
-            while verificaSeJáExisteNoQuadrante(linha[col][linhaquadrante][casa] , _quadrante) == False:
-                linha[col][linhaquadrante][casa] = random.randint(1,9)
-    print()
-print()
-
-fim = time.time()
-
-print("-=" * 35)
-print (fim - inicio)
-print(linha)
+    return True
 
 
-
-# criar mais uma matriz com a 3 matriz anteriores
-
-
-            
-
-    
+def print_board(board):
+    for i in range(len(board)):
+        if i % 3 == 0 and i != 0:
+            print("- " * 15)
+        for j in range(len(board[0])):
+            if j % 3 == 0 and j !=0:
+                print(" | " , end="")
+                
+            if j == 8:
+                print(board[i][j])
+            else:
+                print(str(board[i][j]) + "  " , end="")
 
 
 
-    
-# criar o tabuleiro final com 3 da última
-#  mostrar a matriz com casas com 0
+
+print_board(sudokuBoard)
+Resolve(sudokuBoard)
+print("-=" * 20)
+print_board(sudokuBoard)
